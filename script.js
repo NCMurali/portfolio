@@ -143,42 +143,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Parallax effect for floating icons
+// Enhanced parallax effect for floating icons
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const floatingIcons = document.querySelectorAll('.floating-icons i');
+    const particles = document.querySelectorAll('.particle');
+    const sparkles = document.querySelectorAll('.sparkle');
     
     floatingIcons.forEach((icon, index) => {
         const speed = 0.5 + (index * 0.1);
         const yPos = -(scrolled * speed);
         const xPos = Math.sin(scrolled * 0.001 + index) * 20;
-        icon.style.transform = `translateY(${yPos}px) translateX(${xPos}px)`;
+        const rotation = scrolled * 0.01 + index * 10;
+        icon.style.transform = `translateY(${yPos}px) translateX(${xPos}px) rotate(${rotation}deg)`;
+    });
+    
+    // Parallax for particles
+    particles.forEach((particle, index) => {
+        const speed = 0.3 + (index * 0.05);
+        const yPos = -(scrolled * speed);
+        particle.style.transform = `translateY(${yPos}px)`;
+    });
+    
+    // Parallax for sparkles
+    sparkles.forEach((sparkle, index) => {
+        const speed = 0.4 + (index * 0.08);
+        const yPos = -(scrolled * speed);
+        sparkle.style.transform = `translateY(${yPos}px)`;
     });
 });
 
 // Add particle effects
 function createParticles() {
     const hero = document.querySelector('.hero');
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 30; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
+        const size = Math.random() * 3 + 1;
         particle.style.cssText = `
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--accent);
+            width: ${size}px;
+            height: ${size}px;
+            background: ${i % 3 === 0 ? 'var(--accent)' : i % 3 === 1 ? '#06b6d4' : '#8b5cf6'};
             border-radius: 50%;
             opacity: 0.6;
             pointer-events: none;
             left: ${Math.random() * 100}%;
             top: ${Math.random() * 100}%;
             animation: particleFloat ${3 + Math.random() * 4}s linear infinite;
+            filter: blur(0.5px);
         `;
         hero.appendChild(particle);
     }
 }
 
-// Add CSS for particles
+// Add sparkle effects
+function createSparkles() {
+    const hero = document.querySelector('.hero');
+    for (let i = 0; i < 15; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.innerHTML = '✨';
+        sparkle.style.cssText = `
+            position: absolute;
+            font-size: ${Math.random() * 10 + 8}px;
+            opacity: 0;
+            pointer-events: none;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: sparkle ${2 + Math.random() * 3}s ease-in-out infinite;
+            animation-delay: ${Math.random() * 2}s;
+        `;
+        hero.appendChild(sparkle);
+    }
+}
+
+// Add CSS for particles and sparkles
 const particleStyle = document.createElement('style');
 particleStyle.textContent = `
     @keyframes particleFloat {
@@ -197,11 +237,78 @@ particleStyle.textContent = `
             opacity: 0;
         }
     }
+    
+    @keyframes sparkle {
+        0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1) rotate(180deg); }
+    }
+    
+    .floating-icons i {
+        transition: all 0.3s ease;
+    }
+    
+    .floating-icons i:hover {
+        transform: scale(1.5) rotate(15deg);
+        color: #06b6d4;
+        text-shadow: 0 0 20px rgba(6, 182, 212, 0.8);
+    }
+    
+    .skill-tag {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .skill-tag::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .skill-tag:hover::before {
+        left: 100%;
+    }
+    
+    .project-card {
+        perspective: 1000px;
+    }
+    
+    .project-card:hover .project-image i {
+        animation: rotate3D 1s ease-in-out;
+    }
+    
+    .timeline-content::before {
+        transition: all 0.3s ease;
+    }
+    
+    .timeline-content:hover::before {
+        transform: translateY(-50%) scale(1.5);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+    }
 `;
 document.head.appendChild(particleStyle);
 
-// Initialize particles
-document.addEventListener('DOMContentLoaded', createParticles);
+// Initialize particles and sparkles
+document.addEventListener('DOMContentLoaded', () => {
+    createParticles();
+    createSparkles();
+    
+    // Add wave animation to contact items
+    const contactItems = document.querySelectorAll('.contact-item');
+    contactItems.forEach((item, index) => {
+        item.style.animation = `wave 2s ease-in-out infinite ${index * 0.2}s`;
+    });
+    
+    // Add floating animation to social links
+    const socialLinks = document.querySelectorAll('.social-link');
+    socialLinks.forEach((link, index) => {
+        link.style.animation = `float 3s ease-in-out infinite ${index * 0.3}s`;
+    });
+});
 
 // Add loading animation
 window.addEventListener('load', () => {
